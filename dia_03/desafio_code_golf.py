@@ -8,10 +8,10 @@ load_dotenv()
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 MODELO_FLASH = "gemini-3.5-flash-lite"
 
-entrada = "Oi, sou a Mariana, faco o quarto semestre de Engenharia de Software"
+entrada = "Hello, I'm Mariana, I'm a fourth semester Software Engineering Student"
 
 # Elabore o prompt mais enxuto possivel aqui:
-prompt = f"Extraia JSON {{\"nome\",\"curso\",\"semestre\"}} de: {entrada}"
+prompt = f"Extract JSON {{\"name\",\"course\",\"semester\"}} of: {entrada}"
 
 # 1. Medicao oficial de tokens
 tokens = client.models.count_tokens(model=MODELO_FLASH, contents=prompt).total_tokens
