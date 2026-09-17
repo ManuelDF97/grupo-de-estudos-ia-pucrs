@@ -13,7 +13,7 @@ if not api_key:
 client = genai.Client(api_key=api_key)
 
 # Definir o Modelo Gemini
-MODELO_FLASH = "gemini-3.8-flash"
+MODELO_FLASH = "gemini-3.5-flash-lite"
 
 # Chamada ao Modelo Gemini
 response = client.models.generate_content(
