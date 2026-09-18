@@ -1,4 +1,6 @@
 import os
+import re
+import unicodedata
 import chromadb
 from dotenv import load_dotenv
 from google import genai
@@ -14,12 +16,24 @@ caminhos_possiveis = [
 ]
 CAMINHO_PDF = next((p for p in caminhos_possiveis if os.path.exists(p)), "C:/Users/manue/grupo-de-estudos-ia-pucrs/dia_06/manual_xiaomi_watch5.pdf")
 
+
+def normalizar(texto: str) -> str:
+    """Remove acentos, normaliza unicode e colapsa espacos multiplos.
+    Corrige o caso de acentos vindos em forma NFD (combinando) do pypdf
+    nao baterem com acentos digitados em forma NFC pelo usuario."""
+    texto = unicodedata.normalize("NFKD", texto)
+    texto = "".join(c for c in texto if not unicodedata.combining(c))
+    texto = re.sub(r"\s+", " ", texto)
+    return texto.lower()
+
+
 def gerar_embedding(texto: str) -> list[float]:
     response = client.models.embed_content(
         model=EMBEDDING_MODEL,
         contents=texto,
     )
     return response.embeddings[0].values
+
 
 # 1. Carregar paginas do PDF para a comparacao com busca lexica
 paginas_lexicas = []
@@ -30,7 +44,8 @@ if os.path.exists(CAMINHO_PDF):
         if len(txt) > 30:
             paginas_lexicas.append({
                 "pagina": i,
-                "texto": txt
+                "texto": txt,
+                "texto_normalizado": normalizar(txt),
             })
 
 # 2. Reabrir a colecao persistida no ChromaDB
@@ -55,11 +70,10 @@ while True:
 
     # --- 1. BUSCA LEXICA (Procura palavras exatas da query no texto) ---
     print("\n--- 1. RESULTADOS DA BUSCA LEXICA (Palavras Exatas) ---")
-    termos_query = [t for t in query.lower().split() if len(t) > 2]
+    termos_query = [normalizar(t) for t in query.split() if len(t) > 2]
     encontrados_lexico = []
     for pag in paginas_lexicas:
-        texto_lower = pag["texto"].lower()
-        if any(termo in texto_lower for termo in termos_query):
+        if any(termo in pag["texto_normalizado"] for termo in termos_query):
             encontrados_lexico.append(pag["pagina"])
 
     if encontrados_lexico:
