@@ -10,10 +10,9 @@ client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 EMBEDDING_MODEL = "gemini-embedding-001"
 
 caminhos_possiveis = [
-    "data/manual_xiaomi_watch5.pdf",
-    "sprint_1_fundamentos_rag/data/manual_xiaomi_watch5.pdf"
+    "C:/Users/manue/grupo-de-estudos-ia-pucrs/dia_06/manual_xiaomi_watch5.pdf"
 ]
-CAMINHO_PDF = next((p for p in caminhos_possiveis if os.path.exists(p)), "data/manual_xiaomi_watch5.pdf")
+CAMINHO_PDF = next((p for p in caminhos_possiveis if os.path.exists(p)), "C:/Users/manue/grupo-de-estudos-ia-pucrs/dia_06/manual_xiaomi_watch5.pdf")
 
 def gerar_embedding(texto: str) -> list[float]:
     response = client.models.embed_content(
